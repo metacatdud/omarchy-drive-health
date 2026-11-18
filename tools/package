@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+"""Stage a self-contained Arch build and a source archive; no system changes."""
+import hashlib
+from pathlib import Path
+import shutil
+import tarfile
+
+root = Path(__file__).resolve().parents[1]
+destination = root / 'dist'
+stage = destination / 'collector'
+stage.mkdir(parents=True, exist_ok=True)
+files = ['backend/drive_health.py', 'systemd/omarchy-drive-health.service',
+         'systemd/omarchy-drive-health.timer', 'LICENSE']
+digests = []
+for name in files:
+    data = (root / name).read_bytes()
+    (stage / Path(name).name).write_bytes(data)
+    digests.append(hashlib.sha256(data).hexdigest())
+recipe = (root / 'PKGBUILD').read_text().replace("sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP')",
+    'sha256sums=(' + ' '.join(repr(d) for d in digests) + ')')
+(stage / 'PKGBUILD').write_text(recipe)
+archive = destination / 'omarchy-drive-health-0.4.0.tar.gz'
+with tarfile.open(archive, 'w:gz') as tar:
+    for path in sorted(root.rglob('*')):
+        relative = path.relative_to(root)
+        if any(part in {'.git', 'dist', '__pycache__', 'measurements'} for part in relative.parts) or not path.is_file():
+            continue
+        tar.add(path, arcname=str(Path('omarchy-drive-health-0.4.0') / relative))
+print('Source archive:', archive)
+print('Arch package build: cd', stage, '&& makepkg')

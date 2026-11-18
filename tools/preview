@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+repo=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+shell_root=${OMARCHY_PATH:-/usr/share/omarchy}/shell
+[[ -d "$shell_root/Commons" ]] || { echo 'Requires Omarchy Quickshell with Commons/Ui components' >&2; exit 1; }
+preview_dir=$(mktemp -d)
+trap 'rm -rf -- "$preview_dir"' EXIT
+ln -s "$shell_root/Commons" "$preview_dir/Commons"
+ln -s "$shell_root/Ui" "$preview_dir/Ui"
+ln -s "$repo" "$preview_dir/plugin"
+preview_qml=preview.qml
+if [[ ${1:-} == --smoke ]]; then preview_qml=smoke.qml; shift; fi
+if [[ ${1:-} == --settings-smoke ]]; then
+  preview_qml=settings-smoke.qml
+  export DRIVE_HEALTH_TEST_CONFIG="$preview_dir/test-drives.json"
+  shift
+fi
+cp "$repo/tools/$preview_qml" "$preview_dir/shell.qml"
+quickshell -p "$preview_dir/shell.qml" "$@"
+if [[ $preview_qml == settings-smoke.qml ]]; then
+  python3 - "$DRIVE_HEALTH_TEST_CONFIG" <<'PY'
+import json, sys
+with open(sys.argv[1]) as stream:
+    saved = json.load(stream)['drives']['aaaaaaaaaaaaaaaaaaaaaaaa']
+assert saved == {'warranty_until': '2030-02-28', 'rated_tbw': 600.5}, saved
+print('Settings round-trip verified in a temporary configuration.')
+PY
+fi

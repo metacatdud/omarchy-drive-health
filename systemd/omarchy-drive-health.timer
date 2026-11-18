@@ -1,0 +1,11 @@
+[Unit]
+Description=Record SSD health hourly
+
+[Timer]
+OnBootSec=2min
+OnCalendar=hourly
+Persistent=true
+RandomizedDelaySec=30s
+
+[Install]
+WantedBy=timers.target

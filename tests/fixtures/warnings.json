@@ -1,0 +1,295 @@
+{
+  "drives": [
+    {
+      "id": "8a60fe8787ef1da14aac9249",
+      "model": "Synthetic warning fixture",
+      "device": "/dev/nvme0",
+      "stable_id": true,
+      "temperature_c": null,
+      "power_on_hours": null,
+      "wear_used_pct": 95,
+      "written_tb": null,
+      "media_errors": 3,
+      "spare_pct": null,
+      "status": "warning",
+      "issues": [
+        "media_errors",
+        "wear_high"
+      ],
+      "error_counters": {
+        "media_errors": 3
+      },
+      "critical_warning": 0,
+      "counter_observations": {
+        "media_errors": {
+          "value": 3,
+          "observed_at": 1795000000,
+          "baseline_at": 1795000000,
+          "last_increase_at": null
+        }
+      },
+      "flag_observations": {
+        "wear_high": 1795000000
+      },
+      "health_details": [
+        {
+          "code": "media_errors",
+          "severity": "warning",
+          "value": 3,
+          "previous_value": null,
+          "comparison_at": null,
+          "delta": null,
+          "observation": "baseline",
+          "baseline_at": 1795000000,
+          "last_increase_at": null
+        },
+        {
+          "code": "wear_high",
+          "severity": "warning",
+          "observation": "flag",
+          "first_observed_at": 1795000000
+        }
+      ]
+    },
+    {
+      "id": "8a60fe8787ef1da14aac9249",
+      "model": "Synthetic warning fixture",
+      "device": "/dev/nvme0",
+      "stable_id": true,
+      "temperature_c": null,
+      "power_on_hours": null,
+      "wear_used_pct": 95,
+      "written_tb": null,
+      "media_errors": 4,
+      "spare_pct": null,
+      "status": "warning",
+      "issues": [
+        "media_errors",
+        "wear_high"
+      ],
+      "error_counters": {
+        "media_errors": 4
+      },
+      "critical_warning": 0,
+      "counter_observations": {
+        "media_errors": {
+          "value": 4,
+          "observed_at": 1795003600,
+          "baseline_at": 1795000000,
+          "last_increase_at": 1795003600
+        }
+      },
+      "flag_observations": {
+        "wear_high": 1795000000
+      },
+      "health_details": [
+        {
+          "code": "media_errors",
+          "severity": "warning",
+          "value": 4,
+          "previous_value": 3,
+          "comparison_at": 1795000000,
+          "delta": 1,
+          "observation": "increased",
+          "baseline_at": 1795000000,
+          "last_increase_at": 1795003600
+        },
+        {
+          "code": "wear_high",
+          "severity": "warning",
+          "observation": "flag",
+          "first_observed_at": 1795000000
+        }
+      ]
+    },
+    {
+      "id": "8a60fe8787ef1da14aac9249",
+      "model": "Synthetic warning fixture",
+      "device": "/dev/nvme0",
+      "stable_id": true,
+      "temperature_c": null,
+      "power_on_hours": null,
+      "wear_used_pct": 95,
+      "written_tb": null,
+      "media_errors": 4,
+      "spare_pct": null,
+      "status": "warning",
+      "issues": [
+        "media_errors",
+        "wear_high"
+      ],
+      "error_counters": {
+        "media_errors": 4
+      },
+      "critical_warning": 0,
+      "counter_observations": {
+        "media_errors": {
+          "value": 4,
+          "observed_at": 1795007200,
+          "baseline_at": 1795000000,
+          "last_increase_at": 1795003600
+        }
+      },
+      "flag_observations": {
+        "wear_high": 1795000000
+      },
+      "health_details": [
+        {
+          "code": "media_errors",
+          "severity": "warning",
+          "value": 4,
+          "previous_value": 4,
+          "comparison_at": 1795003600,
+          "delta": null,
+          "observation": "unchanged",
+          "baseline_at": 1795000000,
+          "last_increase_at": 1795003600
+        },
+        {
+          "code": "wear_high",
+          "severity": "warning",
+          "observation": "flag",
+          "first_observed_at": 1795000000
+        }
+      ]
+    },
+    {
+      "id": "8a60fe8787ef1da14aac9249",
+      "model": "Synthetic warning fixture",
+      "device": "/dev/nvme0",
+      "stable_id": true,
+      "temperature_c": null,
+      "power_on_hours": null,
+      "wear_used_pct": 95,
+      "written_tb": null,
+      "media_errors": 1,
+      "spare_pct": null,
+      "status": "warning",
+      "issues": [
+        "media_errors",
+        "wear_high"
+      ],
+      "error_counters": {
+        "media_errors": 1
+      },
+      "critical_warning": 0,
+      "counter_observations": {
+        "media_errors": {
+          "value": 1,
+          "observed_at": 1795010800,
+          "baseline_at": 1795010800,
+          "last_increase_at": null
+        }
+      },
+      "flag_observations": {
+        "wear_high": 1795000000
+      },
+      "health_details": [
+        {
+          "code": "media_errors",
+          "severity": "warning",
+          "value": 1,
+          "previous_value": 4,
+          "comparison_at": 1795007200,
+          "delta": null,
+          "observation": "decreased",
+          "baseline_at": 1795010800,
+          "last_increase_at": null
+        },
+        {
+          "code": "wear_high",
+          "severity": "warning",
+          "observation": "flag",
+          "first_observed_at": 1795000000
+        }
+      ]
+    },
+    {
+      "id": "8a60fe8787ef1da14aac9249",
+      "model": "Synthetic warning fixture",
+      "device": "/dev/nvme0",
+      "stable_id": true,
+      "temperature_c": null,
+      "power_on_hours": null,
+      "wear_used_pct": 95,
+      "written_tb": null,
+      "media_errors": 4,
+      "spare_pct": null,
+      "status": "critical",
+      "issues": [
+        "critical_warning",
+        "media_errors",
+        "wear_high"
+      ],
+      "error_counters": {
+        "media_errors": 4
+      },
+      "critical_warning": 31,
+      "counter_observations": {
+        "media_errors": {
+          "value": 4,
+          "observed_at": 1795010800,
+          "baseline_at": 1795000000,
+          "last_increase_at": 1795003600
+        }
+      },
+      "flag_observations": {
+        "wear_high": 1795000000,
+        "nvme_spare": 1795010800,
+        "nvme_temperature": 1795010800,
+        "nvme_reliability": 1795010800,
+        "nvme_readonly": 1795010800,
+        "nvme_backup": 1795010800
+      },
+      "health_details": [
+        {
+          "code": "media_errors",
+          "severity": "warning",
+          "value": 4,
+          "previous_value": 4,
+          "comparison_at": 1795007200,
+          "delta": null,
+          "observation": "unchanged",
+          "baseline_at": 1795000000,
+          "last_increase_at": 1795003600
+        },
+        {
+          "code": "wear_high",
+          "severity": "warning",
+          "observation": "flag",
+          "first_observed_at": 1795000000
+        },
+        {
+          "code": "nvme_spare",
+          "severity": "critical",
+          "observation": "flag",
+          "first_observed_at": 1795010800
+        },
+        {
+          "code": "nvme_temperature",
+          "severity": "critical",
+          "observation": "flag",
+          "first_observed_at": 1795010800
+        },
+        {
+          "code": "nvme_reliability",
+          "severity": "critical",
+          "observation": "flag",
+          "first_observed_at": 1795010800
+        },
+        {
+          "code": "nvme_readonly",
+          "severity": "critical",
+          "observation": "flag",
+          "first_observed_at": 1795010800
+        },
+        {
+          "code": "nvme_backup",
+          "severity": "critical",
+          "observation": "flag",
+          "first_observed_at": 1795010800
+        }
+      ]
+    }
+  ]
+}

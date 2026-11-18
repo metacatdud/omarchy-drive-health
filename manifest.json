@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "community.drive-health",
+  "name": "Drive Health",
+  "version": "0.4.0",
+  "author": "Drive Health contributors",
+  "description": "Local SSD wear, write endurance and warranty tracking",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Drive Health",
+    "description": "SSD health and endurance",
+    "category": "System",
+    "allowMultiple": false,
+    "defaultSection": "right"
+  }
+}
