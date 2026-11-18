@@ -1,8 +1,21 @@
 # Drive Health for Omarchy
 
-A distributable SSD monitor for Omarchy's Quickshell plugin system. It shows
-SSD SMART status, estimated wear, total writes versus a configured endurance
-limit, temperature, and warranty expiry. It does not predict a failure date.
+Drive Health helps you anticipate when an SSD may be approaching the end of
+its useful life, so you can plan a replacement before wear or reported health
+problems become urgent. It brings SMART warnings, drive-reported wear, total
+writes, temperature, and optional warranty information into your Omarchy bar.
+
+Use it to spot reported health problems and see how much of a manufacturer's
+rated write allowance has been consumed. Hourly monitoring starts automatically
+after collector setup; supported drives are discovered without manual enrollment.
+Warranty dates and rated write allowances are optional values you enter from
+your purchase records and the manufacturer's specifications.
+
+**Currently supports internal NVMe and SATA SSDs, not mechanical hard drives
+(HDDs).** Wear and write endurance help with replacement planning, but cannot
+predict a failure date. Reaching a rated write limit or warranty expiry does
+not mean a drive is broken, and a healthy SMART report does not guarantee it
+will not fail. Keep backups independently of these readings.
 
 ![Demo using the active Omarchy theme](docs/preview.png)
 
