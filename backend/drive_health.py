@@ -18,6 +18,7 @@ import time
 CACHE = Path('/var/lib/omarchy-drive-health/report.json')
 SMARTCTL = '/usr/bin/smartctl'
 LIMIT = 2 * 1024 * 1024
+SYSFS = Path('/sys')
 
 
 def number(value):
@@ -174,6 +175,25 @@ def explain_health(drive, previous, previous_at, now):
     return drive
 
 
+def sata_read_type(device, kind):
+    """Use kernel metadata only; never probe an unknown disk to identify it."""
+    block = SYSFS / 'class/block' / Path(device).name
+    rotation = (block / 'queue/rotational').read_text().strip()
+    if rotation == '1':
+        return None
+    if rotation != '0':
+        raise ValueError('Skipped: unknown rotational status')
+    hardware = (block / 'device').resolve(strict=True)
+    if (any(re.fullmatch(r'usb\d+', part) for part in hardware.parts)
+            or not any(re.fullmatch(r'ata\d+', part) for part in hardware.parts)):
+        raise ValueError('Skipped: not a confirmed internal ATA device')
+    if (block / 'device/power/runtime_status').read_text().strip() != 'active':
+        raise ValueError('Skipped: device is suspended or runtime power state is unknown')
+    # Linux --scan can label SATA as SCSI. Avoid -d auto: its detection commands
+    # can wake a disk before smartctl applies the power-mode guard.
+    return 'ata' if kind == 'ata' else 'sat'
+
+
 def collect():
     report = dict(schema=1, collected_at=int(time.time()), drives=[], errors=[])
     try:
@@ -189,12 +209,25 @@ def collect():
             sys_device = (Path('/sys/class/block') / Path(device).name / 'device').resolve()
             if any(re.fullmatch(r'usb\d+', part) for part in sys_device.parts):
                 continue
-            # --scan often calls Linux SATA devices SCSI before opening them.
-            # Let smartctl detect SAT/ATA when it reads the actual device.
-            if kind == 'scsi':
-                kind = 'auto'
             try:
-                data, status = smart(['--all', '--json', '-d', kind, device])
+                if kind == 'nvme':
+                    if not re.fullmatch(r'/dev/nvme\d+(n\d+)?', device):
+                        continue
+                    options = []
+                else:
+                    if not re.fullmatch(r'/dev/sd[a-z]+', device):
+                        continue
+                    kind = sata_read_type(device, kind)
+                    if kind is None:
+                        continue
+                    # Fail closed both for standby/sleep and unsupported/unknown
+                    # ATA power checks. Never retry without this guard.
+                    options = ['--nocheck=standby,254,253']
+                data, status = smart(['--all', '--json', '-d', kind, *options, device])
+                if kind != 'nvme' and status in (253, 254):
+                    reason = 'standby/sleep' if status == 254 else 'unknown or unsupported power mode'
+                    report['errors'].append(device + ': SMART read skipped: ' + reason)
+                    continue
                 if kind != 'nvme' and data.get('rotation_rate') != 0:
                     if status & 7:
                         report['errors'].append('Could not identify SSD at ' + device)

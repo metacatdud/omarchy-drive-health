@@ -1,4 +1,5 @@
 import copy
+from contextlib import contextmanager
 import datetime as dt
 import importlib.util
 import json
@@ -16,6 +17,22 @@ spec.loader.exec_module(h)
 
 
 class HealthTests(unittest.TestCase):
+    @contextmanager
+    def kernel_disk(self, rotation='0', runtime='active', bus='ata1'):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            block = root / 'class/block/sda'
+            (block / 'queue').mkdir(parents=True)
+            if rotation is not None:
+                (block / 'queue/rotational').write_text(rotation)
+            hardware = root / 'devices/pci' / bus / 'disk'
+            (hardware / 'power').mkdir(parents=True)
+            if runtime is not None:
+                (hardware / 'power/runtime_status').write_text(runtime)
+            (block / 'device').symlink_to(hardware, target_is_directory=True)
+            with patch.object(h, 'SYSFS', root):
+                yield
+
     def nvme(self, **fields):
         return {'model_name': 'Generic NVMe', 'serial_number': 'secret-serial',
                 'smart_status': {'passed': True},
@@ -84,24 +101,59 @@ class HealthTests(unittest.TestCase):
         devices = [{'name': '/dev/sda', 'type': 'sat'}, {'name': '/dev/sdb', 'type': 'sat'},
                    {'name': '/dev/nvme0', 'type': 'nvme'}, {'name': '/dev/sdc', 'type': 'usbjmicron'},
                    {'name': '/dev/../tmp/x', 'type': 'sat'}]
-        replies = [({'devices': devices}, 0), ({'rotation_rate': 7200}, 0),
-                   ({'rotation_rate': 0, 'model_name': 'Other SSD'}, 0), (self.nvme(), 0)]
-        with patch.object(h, 'smart', side_effect=replies) as runner:
+        # sda is a known HDD; sdb has no kernel metadata. Neither may be probed.
+        replies = [({'devices': devices}, 0), (self.nvme(), 0)]
+        with self.kernel_disk(rotation='1'), patch.object(h, 'smart', side_effect=replies) as runner:
             result = h.collect()
-        self.assertEqual(len(result['drives']), 2)
-        self.assertEqual(runner.call_count, 4)
+        self.assertEqual(len(result['drives']), 1)
+        self.assertEqual(runner.call_count, 2)
+        self.assertEqual(runner.call_args.args[0][-1], '/dev/nvme0')
 
     def test_missing_tool_is_reported(self):
         with patch.object(h, 'smart', side_effect=FileNotFoundError('smartctl missing')):
             self.assertTrue(h.collect()['errors'])
 
-    def test_linux_scsi_scan_entry_autodetects_sata(self):
+    def test_linux_scsi_scan_entry_uses_explicit_guarded_sata(self):
         scan = {'devices': [{'name': '/dev/sda', 'type': 'scsi'}]}
         sata = {'rotation_rate': 0, 'model_name': 'Samsung SSD 860 QVO 1TB'}
-        with patch.object(h, 'smart', side_effect=[(scan, 0), (sata, 0)]) as runner:
+        with self.kernel_disk(), patch.object(h, 'smart', side_effect=[(scan, 0), (sata, 0)]) as runner:
             result = h.collect()
         self.assertEqual(len(result['drives']), 1)
-        self.assertEqual(runner.call_args.args[0][-2:], ['auto', '/dev/sda'])
+        self.assertEqual(runner.call_args.args[0],
+                         ['--all', '--json', '-d', 'sat', '--nocheck=standby,254,253', '/dev/sda'])
+
+    def test_unknown_rotational_usb_and_suspended_devices_never_probed(self):
+        cases = [dict(rotation='1'), dict(rotation=None), dict(rotation='invalid'),
+                 dict(runtime='suspended'), dict(runtime='suspending'),
+                 dict(runtime=None), dict(runtime='unknown'),
+                 dict(bus='usb1'), dict(bus='host0')]
+        for case in cases:
+            with self.subTest(case=case), self.kernel_disk(**case):
+                with patch.object(h, 'smart', return_value=({'devices': [
+                        {'name': '/dev/sda', 'type': 'scsi'}]}, 0)) as runner:
+                    result = h.collect()
+                self.assertEqual(result['drives'], [])
+                runner.assert_called_once_with(['--scan', '--json'])
+
+    def test_sata_power_guard_skips_without_unguarded_retry(self):
+        for kind in ('ata', 'sat', 'scsi'):
+            for status in (253, 254):
+                with self.subTest(kind=kind, status=status), self.kernel_disk():
+                    scan = {'devices': [{'name': '/dev/sda', 'type': kind}]}
+                    with patch.object(h, 'smart', side_effect=[(scan, 0), ({}, status)]) as runner:
+                        result = h.collect()
+                    self.assertEqual(result['drives'], [])
+                    self.assertIn('SMART read skipped', result['errors'][0])
+                    self.assertEqual(runner.call_count, 2)
+                    self.assertIn('--nocheck=standby,254,253', runner.call_args.args[0])
+                    self.assertNotIn('auto', runner.call_args.args[0])
+
+    def test_sata_nvme_type_mismatch_cannot_bypass_kernel_checks(self):
+        with patch.object(h, 'smart', return_value=({'devices': [
+                {'name': '/dev/sda', 'type': 'nvme'},
+                {'name': '/dev/nvme0', 'type': 'sat'}]}, 0)) as runner:
+            self.assertEqual(h.collect()['drives'], [])
+        runner.assert_called_once_with(['--scan', '--json'])
 
     def test_atomic_report_and_bounds(self):
         with tempfile.TemporaryDirectory() as folder:

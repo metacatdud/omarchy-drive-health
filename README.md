@@ -163,6 +163,14 @@ used and its ID may change. Raw serial numbers are not written to the cache.
   counters remain **unknown**, not zero or an invented percentage.
 - Rotational disks, USB bridges, RAID adapters, and unusual device names are
   excluded in this prototype. At most 64 scanned entries are considered.
+- Before any SATA SMART read, Linux sysfs must identify a non-rotational
+  device on an internal ATA path with an active runtime power state. Known
+  HDDs are skipped before being queried; missing or unclear metadata is
+  skipped rather than probed. SATA reads use an explicit ATA/SAT type and
+  `--nocheck=standby,254,253`, with no unguarded retry: standby/sleep and
+  unsupported or unknown ATA power-mode checks skip the reading. This can
+  leave some SSDs unavailable; the collector does not wake or probe them to
+  resolve uncertainty. NVMe reads use their separate NVMe path.
 - Wear at/above 90% is highlighted as a planning threshold. Values over 100%
   remain visible. Critical status requires an actual SMART failure/warning.
 - Partial reads, historical SMART errors, missing dependencies, and reports
@@ -224,6 +232,9 @@ processes are introduced.
 
 Sources: [smartctl exit-status documentation](https://github.com/smartmontools/smartmontools/blob/main/src/smartctl.8.in)
 and [NVMe health-log definitions](https://learn.microsoft.com/en-us/windows/win32/api/nvme/ns-nvme-nvme_health_info_log).
+The SATA guards follow the same smartctl manual's `--nocheck` documentation,
+including its warning about device-type autodetection and its separate
+exit status for unsupported power checks.
 
 ## Architecture and security
 

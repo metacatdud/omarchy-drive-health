@@ -1,6 +1,6 @@
 # Local prototype build: run tools/package to stage these sources and build.
 pkgname=omarchy-drive-health-collector
-pkgver=0.4.0
+pkgver=0.4.1
 pkgrel=1
 pkgdesc='Read-only local SMART collector for the Omarchy Drive Health plugin'
 arch=('any')

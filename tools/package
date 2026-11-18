@@ -19,12 +19,12 @@ for name in files:
 recipe = (root / 'PKGBUILD').read_text().replace("sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP')",
     'sha256sums=(' + ' '.join(repr(d) for d in digests) + ')')
 (stage / 'PKGBUILD').write_text(recipe)
-archive = destination / 'omarchy-drive-health-0.4.0.tar.gz'
+archive = destination / 'omarchy-drive-health-0.4.1.tar.gz'
 with tarfile.open(archive, 'w:gz') as tar:
     for path in sorted(root.rglob('*')):
         relative = path.relative_to(root)
         if any(part in {'.git', 'dist', '__pycache__', 'measurements'} for part in relative.parts) or not path.is_file():
             continue
-        tar.add(path, arcname=str(Path('omarchy-drive-health-0.4.0') / relative))
+        tar.add(path, arcname=str(Path('omarchy-drive-health-0.4.1') / relative))
 print('Source archive:', archive)
 print('Arch package build: cd', stage, '&& makepkg')
