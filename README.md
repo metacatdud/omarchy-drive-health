@@ -32,7 +32,7 @@ coverage or a warranty offered by this tool.
 your data or decide whether a backup is necessary.** See [LICENSE](LICENSE)
 for the software's warranty disclaimer and limitation of liability.
 
-![Demo using the active Omarchy theme](docs/preview.png)
+![Drive Health widget using the active Omarchy theme, with clearly labeled sample data](preview.png)
 
 Tested against Omarchy **4.5.0-3**. Requires its Quickshell `Panel`,
 `BarIconButton`, `KeyboardPanel`, `PanelKeyCatcher`, and `Translations` APIs.
