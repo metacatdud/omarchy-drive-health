@@ -12,10 +12,25 @@ Warranty dates and rated write allowances are optional values you enter from
 your purchase records and the manufacturer's specifications.
 
 **Currently supports internal NVMe and SATA SSDs, not mechanical hard drives
-(HDDs).** Wear and write endurance help with replacement planning, but cannot
-predict a failure date. Reaching a rated write limit or warranty expiry does
-not mean a drive is broken, and a healthy SMART report does not guarantee it
-will not fail. Keep backups independently of these readings.
+(HDDs).**
+
+## No guarantees about drive lifespan or data safety
+
+**Drive Health is an informational tool supplied as-is, without warranty.
+It offers absolutely no guarantee about a drive's remaining life, end-of-life
+date, failure timing, reliability, continued operation, or the safety of your
+data. It cannot guarantee advance warning of a failure.**
+
+Wear and write endurance are planning indicators, not predictions. A drive
+can fail suddenly even when every displayed reading looks healthy. Reaching
+a rated write limit or warranty expiry does not mean a drive is broken;
+remaining below those limits does not mean it is safe. Displayed warranty
+information is user-entered reference data, not confirmation of manufacturer
+coverage or a warranty offered by this tool.
+
+**Maintain independent, tested backups. Do not rely on this widget to protect
+your data or decide whether a backup is necessary.** See [LICENSE](LICENSE)
+for the software's warranty disclaimer and limitation of liability.
 
 ![Demo using the active Omarchy theme](docs/preview.png)
 
